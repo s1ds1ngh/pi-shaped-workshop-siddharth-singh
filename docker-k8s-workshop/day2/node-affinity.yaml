@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Node
+metadata:
+  name: node-affinity-example
+  labels:
+    environment: production
+    disktype: ssd
+    app-type: api
+spec:
+  # Node specification would be here in a real cluster
+  # This is just for reference and not to be applied
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-world-api-with-affinity
+  labels:
+    app: hello-world-api
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: environment
+            operator: In
+            values:
+            - production
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 90
+        preference:
+          matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+            - ssd
+      - weight: 10
+        preference:
+          matchExpressions:
+          - key: app-type
+            operator: In
+            values:
+            - api
+  tolerations:
+  - key: "app-type"
+    operator: "Equal"
+    value: "api"
+    effect: "NoSchedule"
+  containers:
+  - name: hello-world-api
+    image: s1ds1ngh/hello-world-api:1.0
+    ports:
+    - containerPort: 8080
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"

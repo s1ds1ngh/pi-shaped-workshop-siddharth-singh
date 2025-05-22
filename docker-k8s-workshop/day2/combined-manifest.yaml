@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-api
+  labels:
+    app: hello-world-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hello-world-api
+  template:
+    metadata:
+      labels:
+        app: hello-world-api
+    spec:
+      # Node Affinity Configuration
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: environment
+                operator: In
+                values:
+                - production
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 90
+            preference:
+              matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                - ssd
+          - weight: 10
+            preference:
+              matchExpressions:
+              - key: app-type
+                operator: In
+                values:
+                - api
+      
+      # Tolerations Configuration
+      tolerations:
+      - key: "app-type"
+        operator: "Equal"
+        value: "api"
+        effect: "NoSchedule"
+      
+      containers:
+      - name: hello-world-api
+        image: s1ds1ngh/hello-world-api:1.0
+        ports:
+        - containerPort: 8080
+        
+        # Resource Requests and Limits
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        
+        # Health Checks
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
