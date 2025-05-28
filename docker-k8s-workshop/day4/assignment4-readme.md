@@ -138,19 +138,6 @@ Beyond simple rollbacks, Helm's revision history supports more sophisticated inc
 
 In summary, Helm simplifies deployment rollback during production incidents through its comprehensive revision history, simple command interface, all-or-nothing rollback semantics, rapid execution, and detailed audit trail. These capabilities directly address the challenges of incident response in complex Kubernetes environments, enabling teams to restore service quickly and confidently while minimizing the risk of further complications.
 
-## Submission Checklist
-
-- [x] charts/hello-world-api/ (Helm chart directory)
-- [x] values.yaml
-- [ ] Screenshot of Helm install and upgrade commands (to be added by you)
-- [x] README.md with install/upgrade instructions
-
-## Additional Resources
-
-- [Helm Documentation](https://helm.sh/docs/)
-- [Helm Best Practices](https://helm.sh/docs/chart_best_practices/)
-- [Helm Chart Development Tips and Tricks](https://helm.sh/docs/howto/charts_tips_and_tricks/)
-
 ## Conclusion
 
 This assignment demonstrates the use of Helm for packaging, configuring, and deploying applications on Kubernetes. By parameterizing key values and using templates, we've created a flexible and reusable deployment solution that can be easily customized for different environments and requirements.
