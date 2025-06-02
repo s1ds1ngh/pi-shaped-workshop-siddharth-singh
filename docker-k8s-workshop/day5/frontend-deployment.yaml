@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: nginx:latest # Placeholder image
+        ports:
+        - containerPort: 80
+        # --- Optimization: Resource Limits & Requests ---
+        # Setting resource requests helps Kubernetes schedule pods efficiently.
+        # Setting limits prevents pods from consuming excessive resources, ensuring stability.
+        resources:
+          requests:
+            memory: "64Mi"  # Request modest memory
+            cpu: "100m"   # Request 0.1 CPU core
+          limits:
+            memory: "128Mi" # Limit memory usage
+            cpu: "250m"   # Limit CPU usage to 0.25 core
+        # --- Optimization: Liveness & Readiness Probes ---
+        # Readiness probe ensures traffic is only sent to ready pods.
+        # Liveness probe restarts unhealthy containers.
+        readinessProbe:
+          httpGet:
+            path: / # Nginx serves on root path
+            port: 80
+          initialDelaySeconds: 5 # Wait 5s before first probe
+          periodSeconds: 10 # Check every 10s
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15 # Wait 15s before first probe
+          periodSeconds: 20 # Check every 20s
+

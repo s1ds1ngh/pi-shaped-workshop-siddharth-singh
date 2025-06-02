@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: backend
+spec:
+  replicas: 3 # Start with a slightly higher replica count for the backend
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: busybox # Placeholder image, often used for simple backend tasks
+        command: ["/bin/sh", "-c", "while true; do echo Hello from backend; sleep 10; done"] # Simple command
+        ports:
+        - containerPort: 8080
+        # --- Optimization: Resource Limits & Requests ---
+        # Define resource requests and limits for the backend.
+        # Requests guarantee resources, limits prevent overconsumption.
+        # Adjust these based on actual backend application needs.
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"   # Lower request for a simple backend
+          limits:
+            memory: "128Mi"
+            cpu: "100m"  # Lower limit for a simple backend
+        # --- Optimization: Liveness & Readiness Probes ---
+        # Use simple exec probes for a basic container like busybox.
+        # Readiness probe checks if the container is ready to serve (process running).
+        # Liveness probe checks if the container is still alive (process running).
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "pgrep -f \"while true; do echo Hello from backend; sleep 10; done\""
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "pgrep -f \"while true; do echo Hello from backend; sleep 10; done\""
+          initialDelaySeconds: 15
+          periodSeconds: 20
+
